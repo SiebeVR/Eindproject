@@ -34,9 +34,9 @@ pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-def create_user(db: Session, user: schemas.UserCreate):
-    hashed_password = auth.get_password_hash(user.password)
-    db_user = models.User(email=user.email, hashed_password=hashed_password)
+def create_user(db: Session, user: UserCreate):
+    hashed_password = get_password_hash(user.password)
+    db_user = User(username=user.username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -75,7 +75,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @app.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     #Try to authenticate the user
-    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=401,
@@ -83,55 +83,55 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             headers={"WWW-Authenticate": "Bearer"},
         )
     # Add the JWT case sub with the subject(user)
-    access_token = auth.create_access_token(
-        data={"sub": user.email}
+    access_token = create_access_token(
+        data={"sub": user.username}
     )
     #Return the JWT as a bearer token to be placed in the headers
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/users/", response_model=schemas.User)
-async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
+@app.post("/users/", response_model=User)
+async def create_user(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = get_user_by_username(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
+    return create_user(db=db, user=user)
 
-@app.get("/leaderboard", response_model=List[schemas.Rider])
+@app.get("/leaderboard", response_model=List[Rider])
 async def sort_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    riders = crud.get_riders(db, skip=skip, limit=limit)
+    riders = get_riders(db, skip=skip, limit=limit)
     riders.sort(key=lambda x: x.punten, reverse=True)
     return riders
 
-@app.get("/riders", response_model=List[schemas.Rider])
+@app.get("/riders", response_model=List[Rider])
 async def get_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    riders = crud.get_riders(db, skip=skip, limit=limit)
+    riders = get_riders(db, skip=skip, limit=limit)
     return riders
 
-@app.get("/rider/{id}", response_model=schemas.Rider)
+@app.get("/rider/{id}", response_model=Rider)
 async def get_rider(id: int, db: Session = Depends(get_db)):
-    db_rider = crud.get_rider(db, id=id)
+    db_rider = get_rider(db, id=id)
     if db_rider is None:
         raise HTTPException(status_code=404, detail="Rider not found")
     return db_rider
 
-@app.get("/rider/{naam}", response_model=schemas.Rider)
+@app.get("/rider/{naam}", response_model=Rider)
 async def get_rider(naam: str, db: Session = Depends(get_db)):
-    db_rider = crud.get_rider(db, naam=naam)
+    db_rider = get_rider(db, naam=naam)
     if db_rider is None:
         raise HTTPException(status_code=404, detail="Rider not found")
     return db_rider
 
-@app.post("/rider", response_model=schemas.Rider)
-async def create_rider(rider: schemas.RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
-    return crud.create_rider(db=db, rider=rider)
+@app.post("/rider", response_model=Rider)
+async def create_rider(rider: RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+    return create_rider(db=db, rider=rider)
 
-@app.put("/rider/{id}", response_model=schemas.Rider)
-async def update_rider(id: int, rider: schemas.RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
-    return crud.update_rider(db=db, id=id, rider=rider)
+@app.put("/rider/{id}", response_model=Rider)
+async def update_rider(id: int, rider: RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+    return update_rider(db=db, id=id, rider=rider)
 
-@app.delete("/rider/{id}", response_model=schemas.Rider)
+@app.delete("/rider/{id}", response_model=Rider)
 async def delete_rider(id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
-    return crud.delete_rider(db=db, id=id)
+    return delete_rider(db=db, id=id)
 
 # @app.get("/")
 # async def root():

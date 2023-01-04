@@ -1,4 +1,4 @@
-from crud import crud, get_user_by_username
+from crud import get_user_by_username
 from sqlalchemy.orm import Session
 from passlib.context import CryptoContext
 from jose import JWTError, jwt
@@ -11,7 +11,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 def authenticate_user(db: Session, username: str, password: str):
-    user = crud.get_user_by_username(db, username)
+    user = get_user_by_username(db, username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
