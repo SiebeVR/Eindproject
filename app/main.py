@@ -1,8 +1,8 @@
 import os
-from app.auth import get_password_hash, verify_password, create_access_token, authenticate_user
-from app.crud import get_riders, get_rider_by_id, get_rider_by_name, get_leaderboard, create_rider, delete_rider, update_rider, get_user_by_username, create_user
-from app.models import Rider, Ploeg, User, Base, models
-from app.schemas import RiderCreate, RiderUpdate, UserCreate, UserUpdate, PloegBase, PloegCreate, PloegUpdate
+import auth
+import crud
+import models
+import schemas
 from database import SessionLocal, engine
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,38 +11,12 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-app = FastAPI()
+if not os.path.exists("./sqlitedb"):
+    os.makedirs("./sqlitedb")
 
-print("Creating tables.......")
-models.Base.metadata.create_all(bind=engine)
-print("Tables created.......")
-
-if not os.path.exists("./sqlitedb/sql_app.db"):
-    os.makedirs("./sqlitedb/sql_app.db")
 
 app = FastAPI()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-def create_user(db: Session, user: UserCreate):
-    hashed_password = get_password_hash(user.password)
-    db_user = User(username=user.username, hashed_password=hashed_password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-   
 # origins = ['http://localhost:8000', 'http://127.0.0.1:8000','https://siebevr.github.io/, https://main-service-siebevr.cloud.okteto.net/']
 origins = ['*']
 app.add_middleware(
@@ -53,6 +27,21 @@ app.add_middleware(
     # allow_methods=["PUT", "GET", "POST", "DELETE"],
     allow_headers=["*"],
 )
+
+print("Creating tables.......")
+models.Base.metadata.create_all(bind=engine)
+print("Tables created.......")
+
+
+app = FastAPI()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 # class Rider(BaseModel):
 #     id: int
@@ -75,7 +64,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @app.post("/token")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     #Try to authenticate the user
-    user = authenticate_user(db, form_data.username, form_data.password)
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=401,
@@ -83,55 +72,55 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             headers={"WWW-Authenticate": "Bearer"},
         )
     # Add the JWT case sub with the subject(user)
-    access_token = create_access_token(
+    access_token = auth.create_access_token(
         data={"sub": user.username}
     )
     #Return the JWT as a bearer token to be placed in the headers
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/users/", response_model=User)
-async def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = get_user_by_username(db, email=user.email)
+@app.post("/users", response_model=schemas.UserBase)
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db, username=user.username)
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return create_user(db=db, user=user)
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return crud.create_user(db=db, user=user)
 
-@app.get("/leaderboard", response_model=List[Rider])
+@app.get("/leaderboard", response_model=list[schemas.RiderBase])
 async def sort_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    riders = get_riders(db, skip=skip, limit=limit)
+    riders = crud.get_riders(db, skip=skip, limit=limit)
     riders.sort(key=lambda x: x.punten, reverse=True)
     return riders
 
-@app.get("/riders", response_model=List[Rider])
+@app.get("/riders", response_model=list[schemas.RiderBase])
 async def get_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    riders = get_riders(db, skip=skip, limit=limit)
+    riders = crud.get_riders(db, skip=skip, limit=limit)
     return riders
 
-@app.get("/rider/{id}", response_model=Rider)
+@app.get("/rider/{id}", response_model=schemas.RiderBase)
 async def get_rider(id: int, db: Session = Depends(get_db)):
-    db_rider = get_rider(db, id=id)
+    db_rider = crud.get_rider(db, id=id)
     if db_rider is None:
         raise HTTPException(status_code=404, detail="Rider not found")
     return db_rider
 
-@app.get("/rider/{naam}", response_model=Rider)
+@app.get("/rider/{naam}", response_model=schemas.RiderBase)
 async def get_rider(naam: str, db: Session = Depends(get_db)):
-    db_rider = get_rider(db, naam=naam)
+    db_rider = crud.get_rider(db, naam=naam)
     if db_rider is None:
         raise HTTPException(status_code=404, detail="Rider not found")
     return db_rider
 
-@app.post("/rider", response_model=Rider)
-async def create_rider(rider: RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
-    return create_rider(db=db, rider=rider)
+@app.post("/rider", response_model=schemas.RiderBase)
+async def create_rider(rider: schemas.RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+    return crud.create_rider(db=db, rider=rider)
 
-@app.put("/rider/{id}", response_model=Rider)
-async def update_rider(id: int, rider: RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
-    return update_rider(db=db, id=id, rider=rider)
+@app.put("/rider/{id}", response_model=schemas.RiderBase)
+async def update_rider(id: int, rider: schemas.RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+    return crud.update_rider(db=db, id=id, rider=rider)
 
-@app.delete("/rider/{id}", response_model=Rider)
+@app.delete("/rider/{id}", response_model=schemas.RiderBase)
 async def delete_rider(id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
-    return delete_rider(db=db, id=id)
+    return crud.delete_rider(db=db, id=id)
 
 # @app.get("/")
 # async def root():

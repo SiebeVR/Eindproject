@@ -4,3 +4,8 @@ services:
   image: r0804405/eindproject
   ports:
     - "8000:8000"
+  volumes:
+    - sqlite_riders_volume:/code/sqlitedb
+
+volumes:
+  sqlite_riders_volume:
