@@ -1,4 +1,4 @@
-from crud import get_user_by_username
+from app.crud import get_user_by_username
 from sqlalchemy.orm import Session
 from passlib.context import CryptoContext
 from jose import JWTError, jwt
