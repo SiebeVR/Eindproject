@@ -1,4 +1,4 @@
-from app.auth import verify_password, get_password_hash
+from app.auth import get_password_hash
 from sqlalchemy.orm import Session
 from models import Rider, User, Ploeg
 from schemas import RiderCreate, RiderUpdate, UserCreate, UserUpdate, PloegBase, PloegCreate, PloegUpdate
