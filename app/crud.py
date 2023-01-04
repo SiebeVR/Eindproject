@@ -1,7 +1,7 @@
 from app.auth import verify_password, get_password_hash
 from sqlalchemy.orm import Session
-import models
-import schemas
+from models import models, Rider, User, Ploeg
+from schema import schemas, RiderCreate, RiderUpdate, UserCreate, UserUpdate, PloegBase, PloegCreate, PloegUpdate
 
 
 def get_rider_by_id(db: Session, id: int):
