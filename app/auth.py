@@ -1,4 +1,4 @@
-from app.crud import get_user_by_username,  verify_password
+from app.crud import get_user_by_username
 from sqlalchemy.orm import Session
 from passlib.context import CryptoContext
 from jose import JWTError, jwt
@@ -10,6 +10,12 @@ SECRET_KEY = "0a426850ff6a6fe27fb27bdbe1977790052cf6ef2494c1c765ab69aad6851953"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+    
 def authenticate_user(db: Session, username: str, password: str):
     user = get_user_by_username(db, username)
     if not user:
@@ -31,8 +37,3 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
