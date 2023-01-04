@@ -16,9 +16,15 @@ class RiderBase(BaseModel):
 class RiderCreate(RiderBase):
     pass
 
+class RiderUpdate(RiderBase):
+    pass
+
 class PloegBase(BaseModel):
     naam: str
     land: str
 
 class PloegCreate(PloegBase):
+    pass
+
+class PloegUpdate(PloegBase):
     pass

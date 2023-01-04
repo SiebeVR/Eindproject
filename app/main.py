@@ -1,8 +1,8 @@
 import os
 from app.auth import get_password_hash, verify_password, create_access_token, authenticate_user
-import crud
-import models
-import schemas
+from app.crud import get_riders, get_rider_by_id, get_rider_by_name, get_leaderboard, create_rider, delete_rider, update_rider, get_user_by_username, create_user
+from app.models import Rider, Ploeg, User, Base, models
+from app.schemas import RiderCreate, RiderUpdate, UserCreate, UserUpdate, PloegBase, PloegCreate, PloegUpdate
 from database import SessionLocal, engine
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
