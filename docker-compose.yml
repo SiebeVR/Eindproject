@@ -1,6 +1,6 @@
 version: "3.10"
 services:
  main-service:
-  image: r0804405/basisproject
+  image: r0804405/eindproject
   ports:
     - "8000:8000"
