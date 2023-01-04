@@ -1,0 +1,6 @@
+version: "3.10"
+services:
+ main-service:
+  image: r0804405/basisproject
+  ports:
+    - "8000:8000"

@@ -1,0 +1,17 @@
+from pydantic import BaseModel
+
+class UserBase(BaseModel):
+    username: str
+
+class UserCreate(UserBase):
+    password: str
+
+class RiderBase(BaseModel):
+    naam: str
+    leeftijd: int
+    land: str
+    ploeg: str
+    punten: int
+
+class RiderCreate(RiderBase):
+    pass
