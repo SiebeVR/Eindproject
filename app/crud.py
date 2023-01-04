@@ -1,35 +1,8 @@
-import crud
+from app.auth import verify_password, get_password_hash
 from sqlalchemy.orm import Session
-from jose import JWTError, jwt
-from datetime import datetime, timedelta
 import models
 import schemas
-import auth
 
-SECRET_KEY = "0a426850ff6a6fe27fb27bdbe1977790052cf6ef2494c1c765ab69aad6851953"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-def authenticate_user(db: Session, username: str, password: str):
-    user = crud.get_user_by_email(db, username)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
-
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        # Default to 15 minutes of expiration time if ACCESS_TOKEN_EXPIRE_MINUTES variable is empty
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    # Adding the JWT expiration time case
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
 
 def get_rider_by_id(db: Session, id: int):
     return db.query(models.Rider).filter(models.Rider.id == id).first()
@@ -74,3 +47,5 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def get_user_by_username(db: Session, username: str):
+    return db.query(models.User).filter(models.User.username == username).first()
