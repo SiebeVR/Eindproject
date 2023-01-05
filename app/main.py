@@ -4,7 +4,7 @@ from app import auth, crud, models, schemas
 # import auth
 # import models
 # import schemas
-from database import SessionLocal, engine
+from app.database import SessionLocal, engine
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
