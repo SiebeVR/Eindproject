@@ -1,10 +1,11 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-from app import database
+from app.database import Base
 
 
 
-class User(database.Base):
+
+class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -14,7 +15,7 @@ class User(database.Base):
     # is_active = Column(Boolean, default=True)
     
 
-class Rider(database.Base):
+class Rider(Base):
     __tablename__ = "riders"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -27,7 +28,7 @@ class Rider(database.Base):
     Link = relationship("Ploeg", back_populates="Links")
     
     
-class Ploeg(database.Base):
+class Ploeg(Base):
     __tablename__ = "ploegen"
 
     naam = Column(String, primary_key=True, index=True)
