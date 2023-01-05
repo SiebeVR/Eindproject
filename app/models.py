@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+from app import database
 from database import Base
 
 
@@ -28,7 +29,7 @@ class Rider(Base):
     
 class Ploeg(Base):
     __tablename__ = "ploegen"
-    
+
     naam = Column(String, primary_key=True, index=True)
     land = Column(String)
 
