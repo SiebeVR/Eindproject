@@ -1,6 +1,6 @@
 import os
-import app.auth
-import app.crud
+import crud
+import auth
 import models
 import schemas
 from database import SessionLocal, engine
