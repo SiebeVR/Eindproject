@@ -55,5 +55,18 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
-# def get_user_by_email(db: Session, email: str):
-#     return db.query(models.User).filter(models.User.email == email).first()
+def get_ploegen(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Ploeg).offset(skip).limit(limit).all()
+
+def create_ploeg(db: Session, ploeg: schemas.Ploeg):
+    db_ploeg = models.Ploeg(naam=ploeg.naam, land=ploeg.land)
+    db.add(db_ploeg)
+    db.commit()
+    db.refresh(db_ploeg)
+    return db_ploeg
+
+def delete_ploeg(db: Session, naam: str):
+    db_ploeg = db.query(models.Ploeg).filter(models.Ploeg.naam == naam).first()
+    db.delete(db_ploeg)
+    db.commit()
+    return db_ploeg

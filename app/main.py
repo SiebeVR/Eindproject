@@ -131,9 +131,22 @@ async def update_rider(id: int, rider: schemas.RiderCreate, db: Session = Depend
 async def delete_rider(id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
     return crud.delete_rider(db=db, id=id)
 
+@app.get("/ploegen", response_model=list[schemas.Ploeg])
+async def get_ploegen(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    ploegen = crud.get_ploegen(db, skip=skip, limit=limit)
+    return ploegen
 
+@app.post("/addploeg/", response_model=schemas.Ploeg)
+async def create_ploeg(ploeg: schemas.PloegCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    return crud.create_ploeg(db, ploeg)
 
+@app.put("/updateploeg/{id}", response_model=schemas.PloegUpdate)
+async def update_ploeg(id: int, ploeg: schemas.PloegCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    return crud.update_ploeg(db=db, id=id, ploeg=ploeg)
 
+@app.delete("/deleteploeg/{id}", response_model=schemas.PloegDelete)
+async def delete_ploeg(id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+    return crud.delete_ploeg(db=db, id=id)
 
 
 

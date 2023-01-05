@@ -33,3 +33,16 @@ class RiderUpdate(Rider):
 
 class RiderDelete(Rider):
     pass
+
+class Ploeg(MyBaseModel):
+    naam: str
+    land: str
+
+class PloegCreate(Ploeg):
+    pass
+
+class PloegUpdate(Ploeg):
+    pass
+
+class PloegDelete(Ploeg):
+    pass

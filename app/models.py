@@ -20,14 +20,16 @@ class Rider(Base):
     naam = Column(String)
     leeftijd = Column(Integer)
     land = Column(String)
-    ploeg = Column(String)
-    # ploeg = Column(String, ForeignKey("ploegen.naam"))
     punten = Column(Integer)
+    ploeg = Column(String, ForeignKey("ploegen.naam"))
+
+    test = relationship("Ploeg", back_populates="tests")
+    
     
 class Ploeg(Base):
     __tablename__ = "ploegen"
 
-    id = Column(Integer, primary_key=True, index=True)
-    naam = Column(String, unique=True)
+    naam = Column(String, primary_key=True, index=True)
     land = Column(String)
-    # Rider = relationship("Rider", back_populates="Ploeg")
+
+    tests = relationship("Rider", back_populates="test")
