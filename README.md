@@ -89,6 +89,9 @@ Als een user een account aanmaakt wordt zijn opgegeven wachtwoord gehasht in de 
 ![image](https://user-images.githubusercontent.com/55507726/210878963-50d88639-635e-4d4d-a068-e0b3f1a1633a.png)
 # Database
 ![image](https://user-images.githubusercontent.com/55507726/210879338-301d5519-404a-4223-a143-573a80a8192a.png)
+![image](https://user-images.githubusercontent.com/55507726/210880318-5246a588-38bd-4a2d-8ae2-be561313e89d.png)
+![image](https://user-images.githubusercontent.com/55507726/210880395-f851d477-8636-4f31-b133-630bb8bd8ec9.png)
+![image](https://user-images.githubusercontent.com/55507726/210880426-1e5c5fc3-b7a8-4faa-a146-f55e578c831b.png)
 # Authenticatie
 ![image](https://user-images.githubusercontent.com/55507726/210875586-9228916b-e316-4fa3-98ea-a0a26a1ef14b.png)
 ![image](https://user-images.githubusercontent.com/55507726/210876145-71c28de2-0aa0-4914-9072-b2e84aef51d8.png)
