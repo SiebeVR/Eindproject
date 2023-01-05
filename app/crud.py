@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
-import models
-import schemas
-import auth
+# import models
+# import schemas
+# import auth
+from app import models, schemas, auth
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 
