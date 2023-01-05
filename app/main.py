@@ -10,6 +10,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from typing import List
 
 if not os.path.exists("./sqlitedb"):
     os.makedirs("./sqlitedb")
@@ -78,12 +79,23 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     #Return the JWT as a bearer token to be placed in the headers
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/users", response_model=schemas.UserBase)
-async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_username(db, username=user.username)
+@app.post("/adduser/", response_model=schemas.User)
+def create_new_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
+        raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
+
+@app.get("/users/", response_model=list[schemas.User])
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    users = crud.get_users(db, skip=skip, limit=limit)
+    return users
+
+
+@app.get("/users/me", response_model=schemas.User)
+def read_users_me(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    current_user = auth.get_current_active_user(db, token)
+    return current_user
 
 @app.get("/leaderboard", response_model=list[schemas.RiderBase])
 async def sort_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -110,15 +122,15 @@ async def get_rider(naam: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Rider not found")
     return db_rider
 
-@app.post("/rider", response_model=schemas.RiderBase)
-async def create_rider(rider: schemas.RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+@app.post("/addrider/", response_model=schemas.RiderBase)
+async def create_rider(rider: schemas.RiderCreate, db: Session = Depends(get_db)):
     return crud.create_rider(db=db, rider=rider)
 
-@app.put("/rider/{id}", response_model=schemas.RiderBase)
+@app.put("/updaterider/{id}", response_model=schemas.RiderBase)
 async def update_rider(id: int, rider: schemas.RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
     return crud.update_rider(db=db, id=id, rider=rider)
 
-@app.delete("/rider/{id}", response_model=schemas.RiderBase)
+@app.delete("/deleterider/{id}", response_model=schemas.RiderBase)
 async def delete_rider(id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
     return crud.delete_rider(db=db, id=id)
 
