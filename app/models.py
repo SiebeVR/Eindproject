@@ -7,12 +7,11 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
+    username = Column(String, unique=True)
+    # email = Column(String, unique=True)
     hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
+    # is_active = Column(Boolean, default=True)
     
-
-    items = relationship("Item", back_populates="owner")
 
 class Rider(Base):
     __tablename__ = "riders"
@@ -21,7 +20,7 @@ class Rider(Base):
     naam = Column(String)
     leeftijd = Column(Integer)
     land = Column(String)
-    ploeg = Column(String, ForeignKey("ploegen.naam"))
+    ploeg = Column(String)
     punten = Column(Integer)
     
 class Ploeg(Base):
@@ -30,4 +29,4 @@ class Ploeg(Base):
     id = Column(Integer, primary_key=True, index=True)
     naam = Column(String, unique=True)
     land = Column(String)
-    Rider = relationship("Rider", back_populates="Ploeg")
+    # Rider = relationship("Rider", back_populates="Ploeg")

@@ -17,7 +17,7 @@ class Ploeg(PloegBase):
 
 
 class UserBase(BaseModel):
-    email: str
+    username: str
 
 
 class UserCreate(UserBase):
@@ -26,13 +26,13 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    is_active: bool
-    items: str
+    # is_active: bool
 
     class Config:
         orm_mode = True
 
 class RiderBase(BaseModel):
+    id: int
     naam: str
     leeftijd: int
     land: str
@@ -43,9 +43,8 @@ class RiderBase(BaseModel):
 class RiderCreate(RiderBase):
     pass
 
-
 class Rider(RiderBase):
-    id: int
+    pass
 
     class Config:
         orm_mode = True

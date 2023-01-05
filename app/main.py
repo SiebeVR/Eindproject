@@ -81,9 +81,9 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 @app.post("/adduser/", response_model=schemas.User)
 def create_new_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
+    db_user = crud.get_user_by_username(db, username=user.username)
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="Username already registered")
     return crud.create_user(db=db, user=user)
 
 @app.get("/users/", response_model=list[schemas.User])
@@ -123,11 +123,12 @@ async def get_rider(naam: str, db: Session = Depends(get_db)):
     return db_rider
 
 @app.post("/addrider/", response_model=schemas.RiderBase)
-async def create_rider(rider: schemas.RiderCreate, db: Session = Depends(get_db)):
+async def create_rider(id: int, naam: str, leeftijd: int, land: str, ploeg: str, punten: int,  db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    rider = schemas.RiderBase(id=id, naam=naam, leeftijd=leeftijd, land=land, ploeg=ploeg, punten=punten)
     return crud.create_rider(db=db, rider=rider)
 
 @app.put("/updaterider/{id}", response_model=schemas.RiderBase)
-async def update_rider(id: int, rider: schemas.RiderCreate, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+async def update_rider(id: int, rider: schemas.RiderCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     return crud.update_rider(db=db, id=id, rider=rider)
 
 @app.delete("/deleterider/{id}", response_model=schemas.RiderBase)
