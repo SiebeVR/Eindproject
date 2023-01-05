@@ -18,7 +18,7 @@ def get_rider_by_name(db: Session, naam: str):
 def get_leaderboard(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Rider).offset(skip).limit(limit).all()
 
-def create_rider(db: Session, rider: schemas.RiderCreate):
+def create_rider(db: Session, rider: schemas.Rider):
     db_rider = models.Rider(id=rider.id, naam=rider.naam, leeftijd=rider.leeftijd, land=rider.land, ploeg=rider.ploeg, punten=rider.punten)
     db.add(db_rider)
     db.commit()

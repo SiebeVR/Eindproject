@@ -15,6 +15,9 @@ from typing import List
 if not os.path.exists("./sqlitedb"):
     os.makedirs("./sqlitedb")
 
+print("Creating tables.......")
+models.Base.metadata.create_all(bind=engine)
+print("Tables created.......")
 
 app = FastAPI()
 
@@ -29,12 +32,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-print("Creating tables.......")
-models.Base.metadata.create_all(bind=engine)
-print("Tables created.......")
-
-
-app = FastAPI()
 
 def get_db():
     db = SessionLocal()
@@ -97,43 +94,80 @@ def read_users_me(db: Session = Depends(get_db), token: str = Depends(oauth2_sch
     current_user = auth.get_current_active_user(db, token)
     return current_user
 
-@app.get("/leaderboard", response_model=list[schemas.RiderBase])
+@app.get("/leaderboard", response_model=list[schemas.Rider])
 async def sort_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     riders = crud.get_riders(db, skip=skip, limit=limit)
     riders.sort(key=lambda x: x.punten, reverse=True)
     return riders
 
-@app.get("/riders", response_model=list[schemas.RiderBase])
+@app.get("/riders", response_model=list[schemas.Rider])
 async def get_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     riders = crud.get_riders(db, skip=skip, limit=limit)
     return riders
 
-@app.get("/rider/{id}", response_model=schemas.RiderBase)
+@app.get("/rider/{id}", response_model=schemas.Rider)
 async def get_rider(id: int, db: Session = Depends(get_db)):
-    db_rider = crud.get_rider(db, id=id)
+    db_rider = crud.get_rider_by_id(db, id=id)
     if db_rider is None:
         raise HTTPException(status_code=404, detail="Rider not found")
     return db_rider
 
-@app.get("/rider/{naam}", response_model=schemas.RiderBase)
+@app.get("/rider/{naam}", response_model=schemas.Rider)
 async def get_rider(naam: str, db: Session = Depends(get_db)):
-    db_rider = crud.get_rider(db, naam=naam)
+    db_rider = crud.get_rider_by_id(db, naam=naam)
     if db_rider is None:
         raise HTTPException(status_code=404, detail="Rider not found")
     return db_rider
 
-@app.post("/addrider/", response_model=schemas.RiderBase)
-async def create_rider(id: int, naam: str, leeftijd: int, land: str, ploeg: str, punten: int,  db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    rider = schemas.RiderBase(id=id, naam=naam, leeftijd=leeftijd, land=land, ploeg=ploeg, punten=punten)
-    return crud.create_rider(db=db, rider=rider)
+@app.post("/addrider/", response_model=schemas.Rider)
+async def create_rider(rider: schemas.RiderCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    return crud.create_rider(db, rider)
 
-@app.put("/updaterider/{id}", response_model=schemas.RiderBase)
+@app.put("/updaterider/{id}", response_model=schemas.RiderUpdate)
 async def update_rider(id: int, rider: schemas.RiderCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     return crud.update_rider(db=db, id=id, rider=rider)
 
-@app.delete("/deleterider/{id}", response_model=schemas.RiderBase)
+@app.delete("/deleterider/{id}", response_model=schemas.RiderDelete)
 async def delete_rider(id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
     return crud.delete_rider(db=db, id=id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # @app.get("/")
 # async def root():

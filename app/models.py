@@ -21,6 +21,7 @@ class Rider(Base):
     leeftijd = Column(Integer)
     land = Column(String)
     ploeg = Column(String)
+    # ploeg = Column(String, ForeignKey("ploegen.naam"))
     punten = Column(Integer)
     
 class Ploeg(Base):

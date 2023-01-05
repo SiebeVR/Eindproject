@@ -1,22 +1,10 @@
 from pydantic import BaseModel
 
-class PloegBase(BaseModel):
-    title: str
-    description: str | None = None
-
-
-class PloegCreate(PloegBase):
-    pass
-
-
-class Ploeg(PloegBase):
-    id: int
-
+class MyBaseModel(BaseModel):
     class Config:
         orm_mode = True
 
-
-class UserBase(BaseModel):
+class UserBase(MyBaseModel):
     username: str
 
 
@@ -27,11 +15,9 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     # is_active: bool
+    
 
-    class Config:
-        orm_mode = True
-
-class RiderBase(BaseModel):
+class Rider(MyBaseModel):
     id: int
     naam: str
     leeftijd: int
@@ -39,12 +25,11 @@ class RiderBase(BaseModel):
     ploeg: str
     punten: int
 
-
-class RiderCreate(RiderBase):
+class RiderCreate(Rider):
     pass
 
-class Rider(RiderBase):
+class RiderUpdate(Rider):
     pass
 
-    class Config:
-        orm_mode = True
+class RiderDelete(Rider):
+    pass
