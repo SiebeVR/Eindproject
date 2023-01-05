@@ -23,13 +23,13 @@ class Rider(Base):
     punten = Column(Integer)
     ploeg = Column(String, ForeignKey("ploegen.naam"))
 
-    test = relationship("Ploeg", back_populates="tests")
+    Link = relationship("Ploeg", back_populates="Links")
     
     
 class Ploeg(Base):
     __tablename__ = "ploegen"
-
+    
     naam = Column(String, primary_key=True, index=True)
     land = Column(String)
 
-    tests = relationship("Rider", back_populates="test")
+    Links = relationship("Rider", back_populates="Link")

@@ -83,16 +83,10 @@ def create_new_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username already registered")
     return crud.create_user(db=db, user=user)
 
-@app.get("/users/", response_model=list[schemas.User])
+@app.get("/users", response_model=list[schemas.User])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
-
-
-@app.get("/users/me", response_model=schemas.User)
-def read_users_me(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    current_user = auth.get_current_active_user(db, token)
-    return current_user
 
 @app.get("/leaderboard", response_model=list[schemas.Rider])
 async def sort_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -108,13 +102,6 @@ async def get_riders(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 @app.get("/rider/{id}", response_model=schemas.Rider)
 async def get_rider(id: int, db: Session = Depends(get_db)):
     db_rider = crud.get_rider_by_id(db, id=id)
-    if db_rider is None:
-        raise HTTPException(status_code=404, detail="Rider not found")
-    return db_rider
-
-@app.get("/rider/{naam}", response_model=schemas.Rider)
-async def get_rider(naam: str, db: Session = Depends(get_db)):
-    db_rider = crud.get_rider_by_id(db, naam=naam)
     if db_rider is None:
         raise HTTPException(status_code=404, detail="Rider not found")
     return db_rider
@@ -139,21 +126,6 @@ async def get_ploegen(skip: int = 0, limit: int = 100, db: Session = Depends(get
 @app.post("/addploeg/", response_model=schemas.Ploeg)
 async def create_ploeg(ploeg: schemas.PloegCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     return crud.create_ploeg(db, ploeg)
-
-@app.put("/updateploeg/{id}", response_model=schemas.PloegUpdate)
-async def update_ploeg(id: int, ploeg: schemas.PloegCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    return crud.update_ploeg(db=db, id=id, ploeg=ploeg)
-
-@app.delete("/deleteploeg/{id}", response_model=schemas.PloegDelete)
-async def delete_ploeg(id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
-    return crud.delete_ploeg(db=db, id=id)
-
-
-
-
-
-
-
 
 
 

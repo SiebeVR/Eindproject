@@ -64,9 +64,3 @@ def create_ploeg(db: Session, ploeg: schemas.Ploeg):
     db.commit()
     db.refresh(db_ploeg)
     return db_ploeg
-
-def delete_ploeg(db: Session, naam: str):
-    db_ploeg = db.query(models.Ploeg).filter(models.Ploeg.naam == naam).first()
-    db.delete(db_ploeg)
-    db.commit()
-    return db_ploeg
