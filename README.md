@@ -97,12 +97,15 @@ Als een user een account aanmaakt wordt zijn opgegeven wachtwoord gehasht in de 
 ![image](https://user-images.githubusercontent.com/55507726/210876145-71c28de2-0aa0-4914-9072-b2e84aef51d8.png)
 # Hashing
 ![image](https://user-images.githubusercontent.com/55507726/210875464-b9c6d3de-768d-49a3-9c36-174f97fd13ff.png)
+# OpenAPI
+![image](https://user-images.githubusercontent.com/55507726/210894064-461e72d9-f8b5-4ec4-a021-7ab4b8e11f3f.png)
+
 
 
 
 ## Links
 
 - Link naar hosted API: https://main-service-siebevr.cloud.okteto.net/
-- Link naar Front-end repository: https://github.com/SiebeVR/eindproject_frontend
-- Link naar hosted Front-end: https://siebevr.github.io/eindproject_frontend/
+- Link naar Front-end repository: https://github.com/SiebeVR/Eindproject_frontend
+- Link naar hosted Front-end: https://siebevr.github.io/Eindproject_frontend/
 - Link naar OpenAPI docs: https://main-service-siebevr.cloud.okteto.net/docs
