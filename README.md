@@ -107,5 +107,5 @@ Als een user een account aanmaakt wordt zijn opgegeven wachtwoord gehasht in de 
 
 - Link naar hosted API: https://main-service-siebevr.cloud.okteto.net/
 - Link naar Front-end repository: https://github.com/SiebeVR/Eindproject_frontend
-- Link naar hosted Front-end: https://siebevr.github.io/Eindproject_frontend/
+- Link naar hosted Front-end op Netlify: https://siebevr-api.netlify.app/
 - Link naar OpenAPI docs: https://main-service-siebevr.cloud.okteto.net/docs
