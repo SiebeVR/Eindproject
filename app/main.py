@@ -85,7 +85,7 @@ def create_new_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 @app.get("/users", response_model=list[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
@@ -108,7 +108,7 @@ async def get_rider(id: int, db: Session = Depends(get_db)):
     return db_rider
 
 @app.post("/addrider/", response_model=schemas.Rider)
-async def create_rider(rider: schemas.RiderCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+async def create_rider(rider: schemas.RiderCreate, db: Session = Depends(get_db)):
     return crud.create_rider(db, rider)
 
 @app.put("/updaterider/{id}", response_model=schemas.RiderUpdate)
@@ -125,7 +125,7 @@ async def get_ploegen(skip: int = 0, limit: int = 100, db: Session = Depends(get
     return ploegen
 
 @app.post("/addploeg/", response_model=schemas.Ploeg)
-async def create_ploeg(ploeg: schemas.PloegCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+async def create_ploeg(ploeg: schemas.PloegCreate, db: Session = Depends(get_db)):
     return crud.create_ploeg(db, ploeg)
 
 
